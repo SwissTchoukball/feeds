@@ -1,0 +1,17 @@
+{
+  "name": "swiss-tchoukball-feed",
+  "version": "1.0.0",
+  "description": "Feeds for Swiss Tchoukball",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "dependencies": {
+    "@directus/sdk": "^9.10.0",
+    "axios": "^0.27.2",
+    "feed": "^4.2.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  }
+}
