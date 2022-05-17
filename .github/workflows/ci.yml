@@ -1,0 +1,55 @@
+name: CI/CD
+
+on: push
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@master
+
+      - name: Setup node env 🏗
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: 16
+          check-latest: true
+
+      - name: Cache node_modules 📦
+        uses: actions/cache@v3.0.2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies 👨🏻‍💻
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Generate feeds 🔨
+        run: npm start
+
+  Deploy:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: CI
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Production
+      url: https://feeds.tchoukball.ch
+
+    steps:
+      - name: Deploy to production 🚀
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd ~/sites/feeds
+            git pull
+            source ~/.nvm/.profile
+            npm ci
+            npm start
