@@ -2,5 +2,5 @@
 
 node_modules
 
-public/*.xml
-public/*.ics
+public/**/*.xml
+public/**/*.ics

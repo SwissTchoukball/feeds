@@ -204,15 +204,15 @@ const createIcsEvents = (events: PartialItem<DirectusEvent>[], language: "fr" | 
 
 const writeIcsFiles = async (icsEvents: string, name: string) => {
   console.log(`Writing ICS events ${name} to files...`);
-  await fs.writeFile(`${__dirname}/../public/${name}.ics`, icsEvents);
+  await fs.writeFile(`${__dirname}/../public/events/${name}.ics`, icsEvents);
 };
 
 const run = async () => {
   const events = await getEvents();
   const icsEventsFr = createIcsEvents(events, "fr");
   const icsEventsDe = createIcsEvents(events, "de");
-  await writeIcsFiles(icsEventsFr, "events-fr");
-  await writeIcsFiles(icsEventsDe, "events-de");
+  await writeIcsFiles(icsEventsFr, "all-fr");
+  await writeIcsFiles(icsEventsDe, "all-de");
 };
 
 run();
