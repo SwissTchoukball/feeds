@@ -204,6 +204,7 @@ const createIcsEvents = (events: PartialItem<DirectusEvent>[], language: "fr" | 
 
 const writeIcsFiles = async (icsEvents: string, name: string) => {
   console.log(`Writing ICS events ${name} to files...`);
+  await fs.mkdir(`${__dirname}/../public/events`, { recursive: true });
   await fs.writeFile(`${__dirname}/../public/events/${name}.ics`, icsEvents);
 };
 
