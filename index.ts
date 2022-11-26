@@ -111,10 +111,19 @@ const createFeed = (posts: PartialItem<DirectusNews>[], language: "fr" | "de"): 
       return;
     }
 
-    let url = `${websiteBaseUrl}/news/${post.id}`;
-    url += post.translations[0].slug ? `-${post.translations[0].slug}` : "";
+    let translation = post.translations[0];
 
-    let content: string = post.translations[0].body || "";
+    if (post.translations.length > 1) {
+      const translationForLocale = post.translations?.find((t) => t?.languages_code === language);
+      if (translationForLocale) {
+        translation = translationForLocale;
+      }
+    }
+
+    let url = `${websiteBaseUrl}/news/${post.id}`;
+    url += translation.slug ? `-${translation.slug}` : "";
+
+    let content: string = translation.body || "";
     let image: string | Enclosure | undefined = undefined;
     if (post.main_image) {
       image = {
@@ -126,7 +135,7 @@ const createFeed = (posts: PartialItem<DirectusNews>[], language: "fr" | "de"): 
     }
 
     feed.addItem({
-      title: post.translations[0].title || "No title",
+      title: translation.title || "No title",
       id: url,
       link: url,
       description: "This is the description",
