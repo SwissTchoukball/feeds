@@ -51,5 +51,6 @@ jobs:
             cd ~/sites/feeds
             git pull
             source ~/.nvm/.profile
+            nvm install
             npm ci
             npm start
