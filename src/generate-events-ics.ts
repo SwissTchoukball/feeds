@@ -154,6 +154,9 @@ const createIcsEvents = (events: PartialItem<DirectusEvent>[], language: "fr" | 
     let endDate: Date;
     if (event.date_end) {
       endDate = new Date(event.date_end);
+      if (isFullDay) {
+        endDate = addDays(endDate, 1);
+      }
     } else if (isFullDay) {
       // For full day events, the endDate must be after the last day
       endDate = addDays(startDate, 1);
