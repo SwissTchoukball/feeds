@@ -144,9 +144,10 @@ const createIcsEvents = (events: PartialItem<DirectusEvent>[], language: "fr" | 
     let isFullDay = true;
 
     let startDate = new Date(event.date_start);
+    const start: DateArray = [startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate()];
     if (event.time_start) {
-      // const startTime = event.time_start.split(":").map((t) => parseInt(t));
-      // startDate = set(startDate, { hours: startTime[0], minutes: startTime[1] });
+      const startTime = event.time_start.split(":").map((t) => parseInt(t));
+      start.push(startTime[0], startTime[1]);
       isFullDay = false;
     }
 
@@ -159,22 +160,13 @@ const createIcsEvents = (events: PartialItem<DirectusEvent>[], language: "fr" | 
     } else {
       endDate = startDate;
     }
-    // if (!isFullDay && event.time_end) {
-    //   const endTime = event.time_end.split(":").map((t) => parseInt(t));
-    //   endDate = set(endDate, { hours: endTime[0], minutes: endTime[1] });
-    // }
-
-    const start: DateArray = [startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate()];
-    if (!isFullDay) {
-      start.push(startDate.getHours(), startDate.getMinutes());
-    }
-
     const end: DateArray = [endDate.getFullYear(), endDate.getMonth() + 1, endDate.getDate()];
-    if (isFullDay) {
-      end.push(endDate.getHours(), endDate.getMinutes());
+    if (!isFullDay && event.time_end) {
+      const endTime = event.time_end.split(":").map((t) => parseInt(t));
+      end.push(endTime[0], endTime[1]);
     }
 
-    let location;
+    let location: string | undefined;
     if (event.venue) {
       location = `${event.venue.name}\n${event.venue.address}`;
     } else if (event.venue_other) {
