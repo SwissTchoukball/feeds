@@ -173,7 +173,7 @@ const createFeed = (posts: PartialItem<DirectusNews>[], language: "fr" | "de"): 
 
 const writeFeedFiles = async (feed: Feed, name: string) => {
   console.log(`Writing feed ${name} to files...`);
-  await fs.writeFile(`public/${name}.xml`, feed.rss2());
+  await fs.writeFile(`${__dirname}/../public/${name}.xml`, feed.rss2());
 };
 
 const run = async () => {

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Feeds for Swiss Tchoukball",
   "private": true,
-  "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "npm run generate:news",
+    "generate:news": "ts-node src/generate-news-feed.ts"
   },
   "dependencies": {
     "@directus/sdk": "^9.10.0",
