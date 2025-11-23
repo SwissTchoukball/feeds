@@ -45,7 +45,7 @@ jobs:
         with:
           host: ${{vars.INFOMANIAK_SSH_HOST}}
           username: ${{ vars.INFOMANIAK_SSH_USERNAME }}
-          privateKey: ${{ secrets.INFOMANIAK_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.INFOMANIAK_SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.INFOMANIAK_SSH_PASSPHRASE }}
           script: |
             cd ~/sites/feeds
