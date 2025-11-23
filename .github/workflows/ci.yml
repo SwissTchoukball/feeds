@@ -43,10 +43,10 @@ jobs:
       - name: Deploy to production 🚀
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: ${{secrets.SSH_HOST}}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          host: ${{vars.INFOMANIAK_SSH_HOST}}
+          username: ${{ vars.INFOMANIAK_SSH_USERNAME }}
+          privateKey: ${{ secrets.INFOMANIAK_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.INFOMANIAK_SSH_PASSPHRASE }}
           script: |
             cd ~/sites/feeds
             git pull
