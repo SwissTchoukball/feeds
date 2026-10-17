@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "npm run generate:news && npm run generate:events",
-    "generate:news": "ts-node src/generate-news-feed.ts",
-    "generate:events": "ts-node src/generate-events-ics.ts"
+    "generate:news": "tsx src/generate-news-feed.ts",
+    "generate:events": "tsx src/generate-events-ics.ts"
   },
   "dependencies": {
     "@directus/sdk": "^27.0.0",
@@ -15,10 +15,10 @@
     "date-fns": "^4.4.0",
     "feed": "^6.0.0",
     "ics": "^3.12.1",
-    "ts-node": "^10.9.2",
     "typescript": "^6.0.0"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5"
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15"
   }
 }
