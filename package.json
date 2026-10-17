@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Feeds for Swiss Tchoukball",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "npm run generate:news && npm run generate:events",
     "generate:news": "ts-node src/generate-news-feed.ts",
@@ -12,7 +13,7 @@
     "@directus/sdk": "^21.3.0",
     "axios": "^1.20.0",
     "date-fns": "^2.30.0",
-    "feed": "^4.2.2",
+    "feed": "^6.0.0",
     "ics": "^3.12.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.0"

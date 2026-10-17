@@ -1,8 +1,8 @@
-import { promises as fs } from "fs";
+import { mkdir, writeFile } from "node:fs/promises";
 import { addDays, format, subYears } from "date-fns";
-import { DateArray, EventAttributes } from "ics";
+import type { DateArray, EventAttributes } from "ics";
 import { createDirectus, readItems, rest } from "@directus/sdk";
-const ics = require("ics");
+import * as ics from "ics";
 
 interface DirectusVenue {
   id: string;
@@ -202,8 +202,8 @@ const createIcsEvents = (events: DirectusEvent[], language: "fr" | "de"): string
 
 const writeIcsFiles = async (icsEvents: string, name: string) => {
   console.log(`Writing ICS events ${name} to files...`);
-  await fs.mkdir(`${__dirname}/../public/events`, { recursive: true });
-  await fs.writeFile(`${__dirname}/../public/events/${name}.ics`, icsEvents);
+  await mkdir(`${import.meta.dirname}/../public/events`, { recursive: true });
+  await writeFile(`${import.meta.dirname}/../public/events/${name}.ics`, icsEvents);
 };
 
 const run = async () => {

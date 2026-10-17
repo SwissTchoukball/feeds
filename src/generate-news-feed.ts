@@ -1,7 +1,7 @@
-import { promises as fs } from "fs";
+import { writeFile } from "node:fs/promises";
 import { createDirectus, readItems, rest } from "@directus/sdk";
 import { Feed } from "feed";
-import { Enclosure } from "feed/lib/typings";
+import type { Enclosure } from "feed";
 
 interface DirectusNews {
   id: number;
@@ -166,7 +166,7 @@ const createFeed = (posts: DirectusNews[], language: "fr" | "de"): Feed => {
 
 const writeFeedFiles = async (feed: Feed, name: string) => {
   console.log(`Writing feed ${name} to files...`);
-  await fs.writeFile(`${__dirname}/../public/${name}.xml`, feed.rss2());
+  await writeFile(`${import.meta.dirname}/../public/${name}.xml`, feed.rss2());
 };
 
 const run = async () => {
