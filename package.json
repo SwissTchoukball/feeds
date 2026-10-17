@@ -10,7 +10,7 @@
     "generate:events": "ts-node src/generate-events-ics.ts"
   },
   "dependencies": {
-    "@directus/sdk": "^21.3.0",
+    "@directus/sdk": "^27.0.0",
     "axios": "^1.20.0",
     "date-fns": "^4.4.0",
     "feed": "^6.0.0",
