@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import { Directus, PartialItem } from "@directus/sdk";
+import { createDirectus, readItems, rest } from "@directus/sdk";
 import { Feed } from "feed";
 import { Enclosure } from "feed/lib/typings";
 
@@ -23,9 +23,9 @@ interface DirectusNews {
 
 const websiteBaseUrl = "https://tchoukball.ch";
 const cmsBaseUrl = "https://cms.tchoukball.ch";
-const directus = new Directus<{ news: DirectusNews }>(cmsBaseUrl);
+const directus = createDirectus<{ news: DirectusNews[] }>(cmsBaseUrl).with(rest());
 
-const getPosts = async (locale: "fr" | "de"): Promise<PartialItem<DirectusNews>[]> => {
+const getPosts = async (locale: "fr" | "de"): Promise<DirectusNews[]> => {
   console.log("Retrieving posts...");
 
   const filter: any = {
@@ -38,36 +38,29 @@ const getPosts = async (locale: "fr" | "de"): Promise<PartialItem<DirectusNews>[
     ],
   };
 
-  const newsResponse = await directus.items("news").readByQuery({
-    meta: "filter_count",
-    limit: 25,
-    page: 1,
-    filter,
-    fields: [
-      "id",
-      "date_created",
-      "date_updated",
-      "main_image.id",
-      "main_image.description",
-      "main_image.type",
-      "main_image.filesize",
-      "translations.languages_code",
-      "translations.slug",
-      "translations.title",
-      "translations.body",
-    ],
-    deep: {
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      domains: { domains_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
-    },
-    sort: ["-date_created"],
-  });
+  const news = (await directus.request(
+    readItems("news", {
+      limit: 25,
+      page: 1,
+      filter,
+      fields: [
+        "id",
+        "date_created",
+        "date_updated",
+        "main_image.id",
+        "main_image.description",
+        "main_image.type",
+        "main_image.filesize",
+        "translations.languages_code",
+        "translations.slug",
+        "translations.title",
+        "translations.body",
+      ] as any,
+      sort: ["-date_created"],
+    } as any)
+  )) as unknown as DirectusNews[];
 
-  if (!newsResponse?.data) {
-    throw new Error("Error when retrieving news");
-  }
-
-  return newsResponse.data.reduce((news, directusNewsEntry) => {
+  return news.reduce((news, directusNewsEntry) => {
     if (!directusNewsEntry) {
       return news;
     }
@@ -83,10 +76,10 @@ const getPosts = async (locale: "fr" | "de"): Promise<PartialItem<DirectusNews>[
     }
 
     return [...news, directusNewsEntry];
-  }, [] as PartialItem<DirectusNews>[]);
+  }, [] as DirectusNews[]);
 };
 
-const createFeed = (posts: PartialItem<DirectusNews>[], language: "fr" | "de"): Feed => {
+const createFeed = (posts: DirectusNews[], language: "fr" | "de"): Feed => {
   console.log(`Creating feed in ${language}...`);
   const feed = new Feed({
     title: "Swiss Tchoukball",
@@ -106,7 +99,7 @@ const createFeed = (posts: PartialItem<DirectusNews>[], language: "fr" | "de"): 
     },
   });
 
-  posts.forEach((post: PartialItem<DirectusNews>) => {
+  posts.forEach((post: DirectusNews) => {
     if (!post.translations || !post.translations[0]) {
       return;
     }

@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { addDays, format, subYears } from "date-fns";
 import { DateArray, EventAttributes } from "ics";
-import { Directus, PartialItem } from "@directus/sdk";
+import { createDirectus, readItems, rest } from "@directus/sdk";
 const ics = require("ics");
 
 interface DirectusVenue {
@@ -34,9 +34,9 @@ interface DirectusEvent {
 const yearsInThePast = 10;
 const maxNumberOfEvent = 10000;
 const cmsBaseUrl = "https://cms.tchoukball.ch";
-const directus = new Directus<{ events: DirectusEvent }>(cmsBaseUrl);
+const directus = createDirectus<{ events: DirectusEvent[] }>(cmsBaseUrl).with(rest());
 
-const getEvents = async (): Promise<PartialItem<DirectusEvent>[]> => {
+const getEvents = async (): Promise<DirectusEvent[]> => {
   console.log("Retrieving events...");
   const startDate = subYears(new Date(), yearsInThePast);
 
@@ -55,41 +55,36 @@ const getEvents = async (): Promise<PartialItem<DirectusEvent>[]> => {
     ],
   };
 
-  const eventsResponse = await directus.items("events").readByQuery({
-    meta: "filter_count",
-    limit: maxNumberOfEvent,
-    page: 1,
-    filter,
-    fields: [
-      "id",
-      "translations.languages_code",
-      "translations.name",
-      "translations.description",
-      "date_start",
-      "time_start",
-      "date_end",
-      "time_end",
-      "status",
-      "venue.id",
-      "venue.name",
-      "venue.city",
-      "venue.address",
-      "venue_other",
-      "url",
-      "type",
-    ],
-    sort: ["date_start"],
-  });
+  const events = (await directus.request(
+    readItems("events", {
+      limit: maxNumberOfEvent,
+      page: 1,
+      filter,
+      fields: [
+        "id",
+        "translations.languages_code",
+        "translations.name",
+        "translations.description",
+        "date_start",
+        "time_start",
+        "date_end",
+        "time_end",
+        "status",
+        "venue.id",
+        "venue.name",
+        "venue.city",
+        "venue.address",
+        "venue_other",
+        "url",
+        "type",
+      ] as any,
+      sort: ["date_start"],
+    } as any)
+  )) as unknown as DirectusEvent[];
 
-  if (eventsResponse?.meta?.filter_count) {
-    console.log(`Retrieved ${eventsResponse.meta.filter_count} events`);
-  }
+  console.log(`Retrieved ${events.length} events`);
 
-  if (!eventsResponse?.data) {
-    throw new Error("Error when retrieving events");
-  }
-
-  return eventsResponse.data.reduce((events, directusEvent) => {
+  return events.reduce((events, directusEvent) => {
     if (!directusEvent) {
       return events;
     }
@@ -106,10 +101,10 @@ const getEvents = async (): Promise<PartialItem<DirectusEvent>[]> => {
     }
 
     return [...events, directusEvent];
-  }, [] as PartialItem<DirectusEvent>[]);
+  }, [] as DirectusEvent[]);
 };
 
-const createIcsEvents = (events: PartialItem<DirectusEvent>[], language: "fr" | "de"): string => {
+const createIcsEvents = (events: DirectusEvent[], language: "fr" | "de"): string => {
   console.log(`Creating ICS events in ${language}...`);
 
   const cancelledPrefix = language === "fr" ? "Annulé" : "Abgesagt";
