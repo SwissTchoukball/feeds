@@ -83,6 +83,15 @@ const getPosts = async (locale: "fr" | "de"): Promise<DirectusNews[]> => {
   }, [] as DirectusNews[]);
 };
 
+const getFirstParagraphText = (html: string): string => {
+  const match = html.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+  const innerHtml = match ? match[1] : html;
+  return innerHtml
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
 const createFeed = (posts: DirectusNews[], language: "fr" | "de"): Feed => {
   console.log(`Creating feed in ${language}...`);
   const feed = new Feed({
@@ -152,7 +161,7 @@ const createFeed = (posts: DirectusNews[], language: "fr" | "de"): Feed => {
       title: translation.title || "No title",
       id: url,
       link: url,
-      description: "This is the description",
+      description: getFirstParagraphText(translation.body || ""),
       content,
       author: [
         {
