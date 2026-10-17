@@ -12,12 +12,14 @@ interface DirectusNews {
     description: string;
     type: string;
     filesize: string;
+    author_name?: string;
   };
   translations: {
     languages_code: string;
     slug: string;
     title: string;
     body: string;
+    main_image_caption?: string;
   }[];
 }
 
@@ -51,10 +53,12 @@ const getPosts = async (locale: "fr" | "de"): Promise<DirectusNews[]> => {
         "main_image.description",
         "main_image.type",
         "main_image.filesize",
+        "main_image.author_name",
         "translations.languages_code",
         "translations.slug",
         "translations.title",
         "translations.body",
+        "translations.main_image_caption",
       ] as any,
       sort: ["-date_created"],
     } as any)
@@ -124,7 +128,24 @@ const createFeed = (posts: DirectusNews[], language: "fr" | "de"): Feed => {
         type: post.main_image.type,
         length: parseInt(post.main_image.filesize || "0"),
       };
-      content = `<p><img src="${cmsBaseUrl}/assets/${post.main_image.id}/?width=1400" /></p>` + content;
+      let figure = `<figure><img src="${cmsBaseUrl}/assets/${post.main_image.id}/?width=1400" />`;
+      const caption = translation.main_image_caption;
+      const author = post.main_image.author_name;
+      if (caption || author) {
+        figure += "<figcaption>";
+        if (caption) {
+          figure += caption;
+        }
+        if (caption && author) {
+          figure += " ";
+        }
+        if (author) {
+          figure += `– Photo : ${author}`;
+        }
+        figure += "</figcaption>";
+      }
+      figure += "</figure>";
+      content = figure + content;
     }
 
     feed.addItem({
