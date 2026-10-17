@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "npm run generate:news && npm run generate:events",
-    "generate:news": "tsx src/generate-news-feed.ts",
-    "generate:events": "tsx src/generate-events-ics.ts"
+    "generate:news": "npx tsx src/generate-news-feed.ts",
+    "generate:events": "npx tsx src/generate-events-ics.ts"
   },
   "dependencies": {
     "@directus/sdk": "^27.0.0",
